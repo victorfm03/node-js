@@ -40,7 +40,7 @@ module.exports=function(sequelize,DataTypes){
 
 {
     tableName:"category",
-    timestamp: false,
+    timestamps: false,
     indexes:[
         {
             name: "PRIMARY",

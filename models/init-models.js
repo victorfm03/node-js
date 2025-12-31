@@ -14,7 +14,7 @@ function initModels(sequelize){
 
     product.belongsTo(category,{as: "idcategory_category",foreignKey: "id_category"})
 
-    category.hashMany(product,{as: "products",foreignKey: "id_category"})
+    category.hasMany(product,{as: "products",foreignKey: "id_category"})
 
     return {category,product}
 

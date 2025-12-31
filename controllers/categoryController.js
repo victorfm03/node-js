@@ -8,7 +8,7 @@ const sequelize=require("../config/squelize.js");
 
 const models=initModels(sequelize);
 
-const categoria= models.category;
+const Categoria= models.category;
 
 class categoryController{
     async createCategory(req, res){
@@ -17,7 +17,7 @@ class categoryController{
 
         try {
 
-            const newCategory= await categoria.create(categoria);
+            const newCategory= await Categoria.create(categoria);
             res.status(201).json(Respuesta.exito(newCategory,"Categoria insertada"))
 
         }catch (err){
@@ -27,11 +27,31 @@ class categoryController{
 
     }
 
+    async getCategoryById(req, res){
+
+        const id_category=req.params.id_category;
+
+        try {
+
+            const data= await Categoria.findByPk(id_category);
+            if(!data){
+                res.status(404).json(Respuesta.error(null, "Categoria inexistente"));
+            }else{
+            res.json(Respuesta.exito(data,"Se recupero la categoria"));
+        }
+
+        }catch (err){
+            logMensaje("Error: "+err)
+            res.status(500).json(Respuesta.error(null, "No se pudieron recuperar las categorias"))
+        }
+
+    }
+
     async getAllCategories(req, res){
 
         try {
 
-            const data= await categoria.findAll();
+            const data= await Categoria.findAll();
             res.json(Respuesta.exito(data,"Se recuperaron todas las categorias"));
 
         }catch (err){
@@ -47,7 +67,7 @@ class categoryController{
 
         try {
 
-            const numFilas= await categoria.destroy({
+            const numFilas= await Categoria.destroy({
                 where: {
                     id_category: id_category
                 }
@@ -69,7 +89,7 @@ class categoryController{
 
     }
 
-    async uodateCategory(req, res){
+    async updateCategory(req, res){
 
         const categoria= req.body;
         const id_category= req.params.id_category;
@@ -80,7 +100,7 @@ class categoryController{
 
         try {
 
-            const numFilas= await categoria.update({...categoria},{where:{id_category}});
+            const numFilas= await Categoria.update({...categoria},{where:{id_category}});
 
             if (numFilas == 0) {
 

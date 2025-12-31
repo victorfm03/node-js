@@ -8,17 +8,19 @@ const sequelize=require("../config/squelize.js");
 
 const models=initModels(sequelize);
 
-const categoria= models.product;
+const Producto= models.product;
+
+const Category= models.category;
 
 class productController{
-    async createproduct(req, res){
+    async createProduct(req, res){
 
         const producto= req.body;
 
         try {
 
-            const newProduct= await categoria.create(producto);
-            res.status(201).json(Respuesta.exito(newProduct,"producto insertada"))
+            const newProduct= await Producto.create(producto);
+            res.status(201).json(Respuesta.exito(newProduct,"producto insertado"))
 
         }catch (err){
             logMensaje("Error :"+err);
@@ -27,12 +29,42 @@ class productController{
 
     }
 
-    async getAllCategories(req, res){
+    async getProductById(req, res){
+    
+            const id_product=req.params.id_product;
+    
+            try {
+    
+                const data= await Producto.findByPk(id_product);
+                if(!data){
+                    res.status(404).json(Respuesta.error(null, "Producto inexistente"));
+                }else{
+                res.json(Respuesta.exito(data,"Se recupero el Producto"));
+            }
+    
+            }catch (err){
+                logMensaje("Error: "+err)
+                res.status(500).json(Respuesta.error(null, "No se pudieron recuperar los Productos"))
+            }
+    
+        }
+
+    async getAllProducts(req, res){
 
         try {
 
-            const data= await producto.findAll();
-            res.json(Respuesta.exito(data,"Se recuperaron todas los productos"));
+            const data= await Producto.findAll({
+                include:[
+                    {
+                        model: Category,
+                        as: "idcategory_category",
+                        attributes: [
+                            "category_name"
+                        ]
+                    }
+                ]
+            });
+            res.json(Respuesta.exito(data,"Se recuperaron todos los productos"));
 
         }catch (err){
             logMensaje("Error: "+err)
@@ -41,13 +73,13 @@ class productController{
 
     }
 
-    async deleteproduct(req, res){
+    async deleteProduct(req, res){
 
         const id_product=req.params.id_product;
 
         try {
 
-            const numFilas= await producto.destroy({
+            const numFilas= await Producto.destroy({
                 where: {
                     id_product: id_product
                 }
@@ -69,7 +101,7 @@ class productController{
 
     }
 
-    async uodateproduct(req, res){
+    async updateProduct(req, res){
 
         const producto= req.body;
         const id_product= req.params.id_product;
@@ -80,7 +112,7 @@ class productController{
 
         try {
 
-            const numFilas= await producto.update({...producto},{where:{id_product}});
+            const numFilas= await Producto.update({...producto},{where:{id_product}});
 
             if (numFilas == 0) {
 
