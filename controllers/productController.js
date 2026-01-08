@@ -5,6 +5,7 @@ const {logMensaje} = require("../utils/logger.js");
 const initModels=require("../models/init-models.js").initModels;
 
 const sequelize=require("../config/squelize.js");
+const { where, Op } = require("sequelize");
 
 const models=initModels(sequelize);
 
@@ -99,6 +100,37 @@ class productController{
             res.status(500).json(Respuesta.error(null, "No se pudieron recuperar los productos"))
         }
 
+    }
+
+    async getProductsParameTrizedByName(req,res) {
+
+        const nombre=req.params.product_name;
+
+            try {
+
+            const data= await Producto.findAll({
+                where: {
+                    product_name:{
+                        [Op.like]:`%${nombre}%`
+                    }
+                },
+                include:[
+                    {
+                        model: Category,
+                        as: "idcategory_category",
+                        attributes: [
+                            "category_name"
+                        ]
+                    }
+                ]
+            });
+            res.json(Respuesta.exito(data,"Se recuperaron todos los productos por nombre"));
+
+        }catch (err){
+            logMensaje("Error: "+err)
+            res.status(500).json(Respuesta.error(null, "No se pudieron recuperar los productos"))
+        }
+        
     }
 
     async updateProduct(req, res){

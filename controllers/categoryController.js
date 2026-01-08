@@ -5,6 +5,7 @@ const {logMensaje} = require("../utils/logger.js");
 const initModels=require("../models/init-models.js").initModels;
 
 const sequelize=require("../config/squelize.js");
+const { Op } = require("sequelize");
 
 const models=initModels(sequelize);
 
@@ -118,5 +119,27 @@ class categoryController{
         }
 
     }
+
+    async getCategoriesParameTrizedByName(req,res) {
+    
+            const nombre=req.params.category_name;
+    
+                try {
+    
+                const data= await Categoria.findAll({
+                    where: {
+                        category_name:{
+                            [Op.like]:`%${nombre}%`
+                        }
+                    }
+                });
+                res.json(Respuesta.exito(data,"Se recuperaron todos las categorias por nombre"));
+    
+            }catch (err){
+                logMensaje("Error: "+err)
+                res.status(500).json(Respuesta.error(null, "No se pudieron recuperar las categorias"))
+            }
+            
+        }
 }
 module.exports=new categoryController()

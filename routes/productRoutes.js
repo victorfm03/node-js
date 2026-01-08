@@ -8,5 +8,7 @@ router.get(`/:id_product`,productController.getProductById);
 router.post(`/`,productController.createProduct);
 router.put(`/:id_product`,productController.updateProduct);
 router.delete(`/:id_product`,productController.deleteProduct);
+router.get('/parametrizado/:product_name',productController.getProductsParameTrizedByName)
+
 
 module.exports=router;
